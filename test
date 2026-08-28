@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pulse — Fast, Modern Web Studio</title>
+<meta name="description" content="Web design & development, SEO, legacy redesigns with Next.js and Tailwind CSS, and performance optimization." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          ink:   '#0A0F14',
+          ink2:  '#111820',
+          ink3:  '#1B232D',
+          line:  '#28323D',
+          paper: '#F3F1EA',
+          paper2:'#FFFFFF',
+          sand:  '#E7E3D8',
+          signal:'#3ED9A6',
+          signal2:'#2BB98B',
+          warn:  '#FF7A45',
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          display: ['"Space Grotesk"', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+        boxShadow: {
+          glow: '0 0 0 1px rgba(62,217,166,0.25), 0 8px 30px -8px rgba(62,217,166,0.35)',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; }
+  .font-num { font-family: 'JetBrains Mono', monospace; }
+
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* before/after slider */
+  .ba-wrap { position: relative; overflow: hidden; user-select: none; touch-action: none; }
+  .ba-after { position: absolute; inset: 0; overflow: hidden; }
+  .ba-handle {
+    position: absolute; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, transparent, #3ED9A6, transparent);
+    cursor: ew-resize;
+  }
+  .ba-knob {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 40px; height: 40px; border-radius: 9999px;
+    background: #3ED9A6; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px -4px rgba(62,217,166,0.6);
+  }
+
+  .old-heading { font-family: "Times New Roman", serif; }
+
+  ::selection { background: #3ED9A6; color: #0A0F14; }
+
+  .marquee-track { animation: marquee 28s linear infinite; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+</style>
+</head>
+
+<body class="bg-paper dark:bg-ink text-ink dark:text-paper transition-colors duration-300 antialiased">
+
+<!-- ============ HEADER ============ -->
+<header class="fixed top-0 inset-x-0 z-50 border-b border-black/5 dark:border-white/5 bg-paper/80 dark:bg-ink/70 backdrop-blur-lg">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 h-16 md:h-20 flex items-center justify-between">
+
+    <!-- logo -->
+    <a href="#top" class="flex items-center gap-2.5 shrink-0">
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <circle cx="15" cy="15" r="14" stroke="#3ED9A6" stroke-width="1.5" opacity="0.35"/>
+        <path d="M4 15H10L12.5 8L17 22L19.5 15H26" stroke="#3ED9A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="font-display font-bold text-lg tracking-tight">Pulse<span class="text-signal">.</span></span>
+    </a>
+
+    <!-- nav desktop -->
+    <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-ink/70 dark:text-paper/70">
+      <a href="#services" class="hover:text-signal transition-colors">Services</a>
+      <a href="#work" class="hover:text-signal transition-colors">Work</a>
+      <a href="#about" class="hover:text-signal transition-colors">About</a>
+      <a href="#contact" class="hover:text-signal transition-colors">Contact</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <!-- theme toggle -->
+      <button id="themeToggle" aria-label="Toggle dark / light mode"
+        class="w-10 h-10 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center hover:border-signal/60 transition-colors">
+        <svg id="iconSun" class="hidden w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+        </svg>
+        <svg id="iconMoon" class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>
+        </svg>
+      </button>
+
+      <a href="#contact" class="hidden sm:inline-flex items-center gap-2 bg-signal text-ink font-bold text-sm px-5 py-2.5 rounded-full hover:bg-signal2 transition-colors shadow-glow">
+        Get in touch
+      </a>
+
+      <!-- mobile menu btn -->
+      <button id="menuBtn" aria-label="Menu" class="md:hidden w-10 h-10 flex items-center justify-center">
+        <svg id="iconMenu" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg id="iconClose" class="hidden w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- mobile menu -->
+  <div id="mobileMenu" class="hidden md:hidden border-t border-black/5 dark:border-white/5 bg-paper dark:bg-ink px-5 py-4 flex flex-col gap-4 font-medium">
+    <a href="#services" class="py-1">Services</a>
+    <a href="#work" class="py-1">Work</a>
+    <a href="#about" class="py-1">About</a>
+    <a href="#contact" class="py-1">Contact</a>
+    <a href="#contact" class="mt-1 text-center bg-signal text-ink font-bold px-5 py-3 rounded-full">Get in touch</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="relative pt-32 md:pt-44 pb-20 md:pb-28 px-5 sm:px-8 overflow-hidden">
+    <div class="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full bg-signal/20 blur-[120px]"></div>
+
+    <div class="max-w-5xl mx-auto text-center relative">
+      <div class="reveal inline-flex items-center gap-2 border border-black/10 dark:border-white/10 rounded-full px-4 py-1.5 text-xs font-num text-ink/60 dark:text-paper/60 mb-7">
+        <span class="w-1.5 h-1.5 rounded-full bg-signal animate-pulse"></span>
+        Open for new projects this month
+      </div>
+
+      <h1 class="reveal font-display font-bold text-4xl sm:text-5xl md:text-6xl leading-[1.15] tracking-tight">
+        Fast websites, modern design,<br class="hidden sm:block" />
+        results that show up on <span class="text-signal">Google</span>.
+      </h1>
+
+      <p class="reveal mt-6 text-lg text-ink/60 dark:text-paper/60 max-w-2xl mx-auto leading-relaxed">
+        I design and build modern web experiences with Next.js and Tailwind CSS, and turn slow,
+        outdated sites into fast, responsive, search-ready ones.
+      </p>
+
+      <div class="reveal mt-9 flex flex-wrap items-center justify-center gap-3">
+        <a href="#contact" class="bg-signal text-ink font-bold px-7 py-3.5 rounded-full hover:bg-signal2 transition-colors shadow-glow">
+          Get a free quote
+        </a>
+        <a href="#work" class="border border-black/15 dark:border-white/15 font-bold px-7 py-3.5 rounded-full hover:border-signal/60 hover:text-signal transition-colors">
+          See the work
+        </a>
+      </div>
+    </div>
+
+    <!-- signature: before/after slider -->
+    <div class="reveal max-w-4xl mx-auto mt-16 md:mt-20">
+      <div class="flex items-center justify-between mb-3 px-1 text-xs font-num text-ink/50 dark:text-paper/50">
+        <span>Drag to see the difference ▸</span>
+        <span class="hidden sm:inline">Before → After</span>
+      </div>
+
+      <div id="baSlider" class="ba-wrap rounded-2xl border border-black/10 dark:border-white/10 aspect-[16/10] sm:aspect-[16/8]">
+
+        <!-- BEFORE (base layer) -->
+        <div class="absolute inset-0 bg-[#d9d5c8] p-5 sm:p-8 old-heading text-[#3a3630]">
+          <div class="flex items-center justify-between border-b-2 border-[#3a3630] pb-2 mb-4">
+            <div class="text-xl font-bold">MY COMPANY INC.</div>
+            <div class="text-xs">Home | About | Contact</div>
+          </div>
+          <div class="text-2xl font-bold underline mb-2">Welcome To Our Website!!</div>
+          <div class="text-xs leading-6 max-w-md">Lorem ipsum dolor sit amet, this is our old outdated template from 2011. It is slow, not mobile friendly, and hard to find on Google search results page.</div>
+          <div class="mt-4 inline-block border-2 border-[#3a3630] px-3 py-1 text-xs">Click Here For More Info</div>
+          <div class="absolute bottom-4 right-8 font-num text-[11px] bg-[#c94a3a] text-white px-2 py-1 rounded-sm">Lighthouse: 41 / 100</div>
+        </div>
+
+        <!-- AFTER (clipped layer) -->
+        <div class="ba-after bg-ink2" style="width:50%;">
+          <div class="h-full p-5 sm:p-8 flex flex-col justify-between" style="width:200%; max-width:none;">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-6 h-6 rounded-md bg-signal"></div>
+                <div class="font-display font-semibold text-paper text-sm">Studio</div>
+              </div>
+              <div class="hidden sm:flex gap-5 text-paper/50 text-xs font-medium">
+                <span>Work</span><span>About</span><span>Contact</span>
+              </div>
+              <div class="text-[11px] font-num bg-signal text-ink px-3 py-1.5 rounded-full">Let's talk</div>
+            </div>
+
+            <div class="max-w-sm">
+              <div class="font-display font-bold text-paper text-2xl sm:text-3xl leading-tight">Fast, modern,<br/>built to convert.</div>
+              <div class="mt-3 h-1.5 w-24 bg-signal rounded-full"></div>
+            </div>
+
+            <div class="flex items-end justify-between">
+              <div class="flex gap-2">
+                <div class="w-16 h-10 sm:w-20 sm:h-12 rounded-lg bg-ink3 border border-white/10"></div>
+                <div class="w-16 h-10 sm:w-20 sm:h-12 rounded-lg bg-ink3 border border-white/10"></div>
+                <div class="w-16 h-10 sm:w-20 sm:h-12 rounded-lg bg-signal/20 border border-signal/40"></div>
+              </div>
+              <div class="font-num text-[11px] bg-signal/15 text-signal px-2 py-1 rounded-sm border border-signal/30">Lighthouse: 98 / 100</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- handle -->
+        <div class="ba-handle" style="left:50%;">
+          <div class="ba-knob">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0F14" stroke-width="2.5" stroke-linecap="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-center gap-8 mt-4 font-num text-xs text-ink/50 dark:text-paper/50">
+        <span>0.8s <span class="text-ink/30 dark:text-paper/30">load time</span></span>
+        <span>100% <span class="text-ink/30 dark:text-paper/30">responsive</span></span>
+        <span>98/100 <span class="text-ink/30 dark:text-paper/30">Lighthouse</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TECH MARQUEE ============ -->
+  <section class="border-y border-black/5 dark:border-white/5 py-6 overflow-hidden bg-sand/40 dark:bg-ink2/40">
+    <div class="flex whitespace-nowrap marquee-track w-max font-num text-sm text-ink/40 dark:text-paper/40 gap-10">
+      <div class="flex gap-10">
+        <span>Next.js</span><span>·</span><span>Tailwind CSS</span><span>·</span><span>React</span><span>·</span>
+        <span>Technical SEO</span><span>·</span><span>Core Web Vitals</span><span>·</span><span>Figma</span><span>·</span>
+        <span>Responsive Design</span><span>·</span>
+      </div>
+      <div class="flex gap-10">
+        <span>Next.js</span><span>·</span><span>Tailwind CSS</span><span>·</span><span>React</span><span>·</span>
+        <span>Technical SEO</span><span>·</span><span>Core Web Vitals</span><span>·</span><span>Figma</span><span>·</span>
+        <span>Responsive Design</span><span>·</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES ============ -->
+  <section id="services" class="px-5 sm:px-8 py-20 md:py-28">
+    <div class="max-w-6xl mx-auto">
+      <div class="reveal max-w-xl mb-14">
+        <div class="font-num text-signal text-xs mb-3">// Services</div>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl">Everything your website needs, in one place.</h2>
+        <p class="text-ink/60 dark:text-paper/60 mt-3">From idea to a fast, search-ready live site.</p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+
+        <div class="reveal group border border-black/10 dark:border-white/10 rounded-2xl p-7 hover:border-signal/50 transition-colors bg-paper2 dark:bg-ink2">
+          <div class="w-11 h-11 rounded-xl bg-signal/10 border border-signal/25 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Web Design & Development</h3>
+          <p class="text-sm text-ink/60 dark:text-paper/60 leading-relaxed">
+            Modern, fast websites: landing pages, online stores, and business sites — built around your brand.
+          </p>
+        </div>
+
+        <div class="reveal group border border-black/10 dark:border-white/10 rounded-2xl p-7 hover:border-signal/50 transition-colors bg-paper2 dark:bg-ink2">
+          <div class="w-11 h-11 rounded-xl bg-signal/10 border border-signal/25 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Search Engine Optimization</h3>
+          <p class="text-sm text-ink/60 dark:text-paper/60 leading-relaxed">
+            Technical and structural SEO so your site shows up on the first page of Google, with clean headings and markup.
+          </p>
+        </div>
+
+        <div class="reveal group border border-black/10 dark:border-white/10 rounded-2xl p-7 hover:border-signal/50 transition-colors bg-paper2 dark:bg-ink2">
+          <div class="w-11 h-11 rounded-xl bg-signal/10 border border-signal/25 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.5 9a9 9 0 0114.85-3.36L23 10M1 14l4.65 4.36A9 9 0 0020.5 15"/></svg>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Redesigns & Rebuilds</h3>
+          <p class="text-sm text-ink/60 dark:text-paper/60 leading-relaxed">
+            Turning old code or off-the-shelf templates into modern files built with Next.js and Tailwind CSS.
+          </p>
+        </div>
+
+        <div class="reveal group border border-black/10 dark:border-white/10 rounded-2xl p-7 hover:border-signal/50 transition-colors bg-paper2 dark:bg-ink2">
+          <div class="w-11 h-11 rounded-xl bg-signal/10 border border-signal/25 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-signal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Performance & Speed</h3>
+          <p class="text-sm text-ink/60 dark:text-paper/60 leading-relaxed">
+            Faster page loads and full responsiveness across phones, tablets, and desktop.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT strip ============ -->
+  <section id="about" class="px-5 sm:px-8 py-16 border-y border-black/5 dark:border-white/5 bg-sand/30 dark:bg-ink2/40">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-[1.2fr_1fr] gap-10 items-center">
+      <div class="reveal">
+        <div class="font-num text-signal text-xs mb-3">// About</div>
+        <h2 class="font-display font-bold text-2xl sm:text-3xl mb-4">A web developer focused on speed and modern design.</h2>
+        <p class="text-ink/60 dark:text-paper/60 leading-relaxed">
+          I work directly with small and medium business owners to turn their ideas — or their outdated sites —
+          into fast, modern digital experiences, without the overhead or the middlemen.
+        </p>
+      </div>
+      <div class="reveal grid grid-cols-3 gap-4 text-center">
+        <div class="border border-black/10 dark:border-white/10 rounded-xl py-6 bg-paper2 dark:bg-ink">
+          <div class="font-display font-bold text-2xl text-signal font-num">3+</div>
+          <div class="text-xs text-ink/50 dark:text-paper/50 mt-1">Years experience</div>
+        </div>
+        <div class="border border-black/10 dark:border-white/10 rounded-xl py-6 bg-paper2 dark:bg-ink">
+          <div class="font-display font-bold text-2xl text-signal font-num">20+</div>
+          <div class="text-xs text-ink/50 dark:text-paper/50 mt-1">Projects shipped</div>
+        </div>
+        <div class="border border-black/10 dark:border-white/10 rounded-xl py-6 bg-paper2 dark:bg-ink">
+          <div class="font-display font-bold text-2xl text-signal font-num">&lt;1s</div>
+          <div class="text-xs text-ink/50 dark:text-paper/50 mt-1">Average load time</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PORTFOLIO ============ -->
+  <section id="work" class="px-5 sm:px-8 py-20 md:py-28">
+    <div class="max-w-6xl mx-auto">
+      <div class="reveal max-w-xl mb-14">
+        <div class="font-num text-signal text-xs mb-3">// Work</div>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl">A few sample projects.</h2>
+        <p class="text-ink/60 dark:text-paper/60 mt-3">Swap these placeholders for screenshots of your real work.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- card 1 -->
+        <div class="reveal rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-paper2 dark:bg-ink2 hover:-translate-y-1.5 transition-transform">
+          <div class="h-8 flex items-center gap-1.5 px-3 border-b border-black/10 dark:border-white/10">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-400/70"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-green-400/70"></span>
+          </div>
+          <div class="aspect-[4/3] bg-gradient-to-br from-signal/25 via-ink3 to-ink flex items-center justify-center">
+            <div class="w-3/4 space-y-2">
+              <div class="h-3 w-1/2 bg-white/20 rounded"></div>
+              <div class="h-8 w-full bg-white/10 rounded-lg"></div>
+              <div class="flex gap-2"><div class="h-14 w-1/3 bg-white/10 rounded-lg"></div><div class="h-14 w-1/3 bg-white/10 rounded-lg"></div><div class="h-14 w-1/3 bg-signal/30 rounded-lg"></div></div>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="font-bold mb-1.5">Modern E-commerce Store</h3>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-num text-ink/50 dark:text-paper/50">
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">Next.js</span>
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">Tailwind</span>
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">Stripe</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- card 2 -->
+        <div class="reveal rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-paper2 dark:bg-ink2 hover:-translate-y-1.5 transition-transform">
+          <div class="h-8 flex items-center gap-1.5 px-3 border-b border-black/10 dark:border-white/10">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-400/70"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-green-400/70"></span>
+          </div>
+          <div class="aspect-[4/3] bg-gradient-to-br from-warn/25 via-ink3 to-ink flex items-center justify-center">
+            <div class="w-3/4 space-y-2 text-center flex flex-col items-center">
+              <div class="h-3 w-1/3 bg-white/20 rounded"></div>
+              <div class="h-4 w-2/3 bg-white/10 rounded"></div>
+              <div class="h-9 w-1/2 bg-warn/30 rounded-full mt-1"></div>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="font-bold mb-1.5">Startup Landing Page</h3>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-num text-ink/50 dark:text-paper/50">
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">Next.js</span>
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">Framer Motion</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- card 3 -->
+        <div class="reveal rounded-2xl overflow-hidden border border-black/10 dark:border-white/10 bg-paper2 dark:bg-ink2 hover:-translate-y-1.5 transition-transform">
+          <div class="h-8 flex items-center gap-1.5 px-3 border-b border-black/10 dark:border-white/10">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-400/70"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70"></span>
+            <span class="w-2.5 h-2.5 rounded-full bg-green-400/70"></span>
+          </div>
+          <div class="aspect-[4/3] bg-gradient-to-br from-blue-400/20 via-ink3 to-ink flex items-center justify-center">
+            <div class="w-3/4 grid grid-cols-2 gap-2">
+              <div class="h-16 bg-white/10 rounded-lg col-span-2"></div>
+              <div class="h-10 bg-white/10 rounded-lg"></div>
+              <div class="h-10 bg-blue-300/20 rounded-lg"></div>
+            </div>
+          </div>
+          <div class="p-5">
+            <h3 class="font-bold mb-1.5">Clinic Business Site</h3>
+            <div class="flex flex-wrap gap-1.5 text-[11px] font-num text-ink/50 dark:text-paper/50">
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">SEO</span>
+              <span class="border border-black/10 dark:border-white/10 rounded-full px-2 py-0.5">Responsive design</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section class="px-5 sm:px-8 py-20 md:py-28 border-y border-black/5 dark:border-white/5 bg-sand/30 dark:bg-ink2/40">
+    <div class="max-w-6xl mx-auto">
+      <div class="reveal max-w-xl mb-14">
+        <div class="font-num text-signal text-xs mb-3">// Testimonials</div>
+        <h2 class="font-display font-bold text-3xl sm:text-4xl">What clients say.</h2>
+        <p class="text-ink/60 dark:text-paper/60 mt-3">Sample copy — swap in real reviews from your clients.</p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="reveal border border-black/10 dark:border-white/10 rounded-2xl p-6 bg-paper2 dark:bg-ink">
+          <div class="flex gap-1 text-signal mb-4">★★★★★</div>
+          <p class="text-sm leading-relaxed text-ink/70 dark:text-paper/70 mb-5">"The new site is so much faster than our old one, and our Google rankings improved noticeably. Professional and easy to work with."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-signal/20 flex items-center justify-center font-bold text-signal">S</div>
+            <div>
+              <div class="font-bold text-sm">Sarah</div>
+              <div class="text-xs text-ink/50 dark:text-paper/50">Online store owner</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal border border-black/10 dark:border-white/10 rounded-2xl p-6 bg-paper2 dark:bg-ink">
+          <div class="flex gap-1 text-signal mb-4">★★★★★</div>
+          <p class="text-sm leading-relaxed text-ink/70 dark:text-paper/70 mb-5">"I needed to replace my old website — turnaround was quick, and the new design looks great on mobile too."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-signal/20 flex items-center justify-center font-bold text-signal">Y</div>
+            <div>
+              <div class="font-bold text-sm">Yusuf</div>
+              <div class="text-xs text-ink/50 dark:text-paper/50">Startup founder</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal border border-black/10 dark:border-white/10 rounded-2xl p-6 bg-paper2 dark:bg-ink">
+          <div class="flex gap-1 text-signal mb-4">★★★★★</div>
+          <p class="text-sm leading-relaxed text-ink/70 dark:text-paper/70 mb-5">"Explained everything in plain terms and stuck around after launch. Recommend to anyone who wants something clean and fast."</p>
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-signal/20 flex items-center justify-center font-bold text-signal">N</div>
+            <div>
+              <div class="font-bold text-sm">Nour</div>
+              <div class="text-xs text-ink/50 dark:text-paper/50">Clinic manager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section id="contact" class="px-5 sm:px-8 py-20 md:py-28">
+    <div class="reveal max-w-4xl mx-auto text-center border border-black/10 dark:border-white/10 rounded-3xl p-10 sm:p-16 relative overflow-hidden bg-paper2 dark:bg-ink2">
+      <div class="pointer-events-none absolute -bottom-24 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-signal/20 blur-[100px]"></div>
+      <div class="relative">
+        <h2 class="font-display font-bold text-3xl sm:text-4xl mb-4">When should we start?</h2>
+        <p class="text-ink/60 dark:text-paper/60 mb-8 max-w-lg mx-auto">Message me on WhatsApp or email, and I'll get back to you with a clear quote — price and expected timeline included.</p>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="https://wa.me/212600000000" target="_blank" rel="noopener" class="bg-signal text-ink font-bold px-7 py-3.5 rounded-full hover:bg-signal2 transition-colors shadow-glow">
+            Message on WhatsApp
+          </a>
+          <a href="mailto:hello@example.com" class="border border-black/15 dark:border-white/15 font-bold px-7 py-3.5 rounded-full hover:border-signal/60 hover:text-signal transition-colors">
+            Send an email
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="border-t border-black/5 dark:border-white/5 px-5 sm:px-8 py-12">
+  <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 md:gap-6 justify-between">
+
+    <div class="max-w-xs">
+      <div class="flex items-center gap-2 mb-3">
+        <svg width="24" height="24" viewBox="0 0 30 30" fill="none">
+          <circle cx="15" cy="15" r="14" stroke="#3ED9A6" stroke-width="1.5" opacity="0.35"/>
+          <path d="M4 15H10L12.5 8L17 22L19.5 15H26" stroke="#3ED9A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="font-display font-bold">Pulse<span class="text-signal">.</span></span>
+      </div>
+      <p class="text-sm text-ink/50 dark:text-paper/50 leading-relaxed">Independent studio building fast, modern, search-ready websites.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-8">
+      <div>
+        <div class="font-bold text-sm mb-3">Quick links</div>
+        <div class="flex flex-col gap-2 text-sm text-ink/50 dark:text-paper/50">
+          <a href="#services" class="hover:text-signal">Services</a>
+          <a href="#work" class="hover:text-signal">Work</a>
+          <a href="#about" class="hover:text-signal">About</a>
+        </div>
+      </div>
+      <div>
+        <div class="font-bold text-sm mb-3">Contact</div>
+        <div class="flex flex-col gap-2 text-sm text-ink/50 dark:text-paper/50">
+          <a href="mailto:hello@example.com" class="hover:text-signal">hello@example.com</a>
+          <a href="https://wa.me/212600000000" class="hover:text-signal">+212 6 00 00 00 00</a>
+        </div>
+      </div>
+      <div>
+        <div class="font-bold text-sm mb-3">Follow</div>
+        <div class="flex gap-2">
+          <a href="#" class="text-xs border border-black/10 dark:border-white/10 rounded-full px-3 py-1.5 hover:border-signal/60 hover:text-signal">Instagram</a>
+          <a href="#" class="text-xs border border-black/10 dark:border-white/10 rounded-full px-3 py-1.5 hover:border-signal/60 hover:text-signal">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto mt-10 pt-6 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink/40 dark:text-paper/40">
+    <span>© <span id="year"></span> Pulse. All rights reserved.</span>
+    <span class="font-num">Built with Next.js · Tailwind CSS</span>
+  </div>
+</footer>
+
+<!-- floating whatsapp -->
+<a href="https://wa.me/212600000000" target="_blank" rel="noopener" aria-label="WhatsApp"
+   class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-signal text-ink flex items-center justify-center shadow-glow hover:bg-signal2 transition-colors">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 01-12.36 7.56L3 20l1.05-5.44A8.5 8.5 0 1121 11.5z"/></svg>
+</a>
+
+<script>
+  // ---- theme toggle ----
+  const html = document.documentElement;
+  const sun = document.getElementById('iconSun');
+  const moon = document.getElementById('iconMoon');
+  function syncIcons(){
+    const isDark = html.classList.contains('dark');
+    sun.classList.toggle('hidden', !isDark);
+    moon.classList.toggle('hidden', isDark);
+  }
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') html.classList.remove('dark');
+  syncIcons();
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.classList.toggle('dark');
+    localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+    syncIcons();
+  });
+
+  // ---- mobile menu ----
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const iconMenu = document.getElementById('iconMenu');
+  const iconClose = document.getElementById('iconClose');
+  menuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+    iconMenu.classList.toggle('hidden');
+    iconClose.classList.toggle('hidden');
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mobileMenu.classList.add('hidden');
+    iconMenu.classList.remove('hidden');
+    iconClose.classList.add('hidden');
+  }));
+
+  // ---- scroll reveal ----
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ---- before/after slider ----
+  const wrap = document.getElementById('baSlider');
+  const after = wrap.querySelector('.ba-after');
+  const handle = wrap.querySelector('.ba-handle');
+  let dragging = false;
+
+  function setPos(clientX){
+    const rect = wrap.getBoundingClientRect();
+    let pct = ((clientX - rect.left) / rect.width) * 100;
+    pct = Math.max(4, Math.min(96, pct));
+    after.style.width = pct + '%';
+    handle.style.left = pct + '%';
+  }
+  wrap.addEventListener('pointerdown', (e) => { dragging = true; setPos(e.clientX); });
+  window.addEventListener('pointermove', (e) => { if (dragging) setPos(e.clientX); });
+  window.addEventListener('pointerup', () => dragging = false);
+
+  // ---- footer year ----
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
